@@ -5,7 +5,7 @@ import { serverConfig } from ".";
 const redisConfig ={
     host: serverConfig.REDIS_HOST || '',
     port: serverConfig.REDIS_PORT || 6379,
-    maximumRetriesPerRequest: null,
+    maxRetriesPerRequest: null,
 }
 
 export const redis = new Redis(redisConfig);
