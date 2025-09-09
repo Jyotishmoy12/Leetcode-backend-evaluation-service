@@ -7,7 +7,7 @@ async function setupEvaluationWorker() {
   const worker = new Worker(
     SUBMISSION_QUEUE,
     async (job) => {
-      logger.info(`Processing job ${job}`);
+      logger.info(`Processing job ${job.id}`);
     },
     {
       connection: createNewRedisConnection(),
