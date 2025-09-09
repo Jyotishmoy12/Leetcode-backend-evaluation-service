@@ -6,6 +6,10 @@ const redisConfig ={
     host: serverConfig.REDIS_HOST || '',
     port: serverConfig.REDIS_PORT || 6379,
     maxRetriesPerRequest: null,
+    retryStrategy:(times:number)=>{
+        if(times > 3) return null;
+        return Math.min(times * 100, 3000);
+    }
 }
 
 export const redis = new Redis(redisConfig);
