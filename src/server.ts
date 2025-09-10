@@ -46,6 +46,7 @@ app.listen(serverConfig.PORT, async () => {
 //     code: pythonCode,
 //     language: "python",
 //     timeout: 1000,
+//     imageName: PYTHON_IMAGE
 //   }
 //
 //);
