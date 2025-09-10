@@ -41,5 +41,12 @@ app.listen(serverConfig.PORT, async () => {
 
 // async function testPythonCode() {
 //   const pythonCode = `print("bye")`;
-//   await runPythonCode(pythonCode);
+//   await runCode(
+//   {
+//     code: pythonCode,
+//     language: "python",
+//     timeout: 1000,
+//   }
+//
+//);
 // }

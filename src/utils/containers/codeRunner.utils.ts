@@ -1,0 +1,49 @@
+import { PYTHON_IMAGE } from "../constants";
+import { InternalServerError } from "../errors/app.error";
+import { commands } from "./commands.utils";
+import { createNewDockerContainer } from "./createContainer.utils";
+
+const allowedListedLanguages = ["python"];
+
+export interface RunCodeOptions {
+  code: string;
+  language: "python";
+  timeout: number;
+}
+export async function runCode(options: RunCodeOptions) {
+  // Take the python code and dump in a file and run the python file in the container
+  const { code, language, timeout } = options;
+
+  if (!allowedListedLanguages.includes(language)) {
+    throw new InternalServerError("Language not allowed");
+  }
+  const container = await createNewDockerContainer({
+    imageName: PYTHON_IMAGE,
+    cmdExecutable: commands[language](code),
+    memoryLimit: 1024 * 1024 * 1024,
+  });
+
+  const timeLimitExcededTimeout = setTimeout(() => {
+    console.log("Time limit exceeded");
+    container?.kill();
+  }, timeout);
+
+  console.log("Container created successfully", container?.id);
+  await container?.start();
+
+  const status = await container?.wait();
+  console.log("Container status", status);
+  const logs = await container?.logs({
+    stdout: true,
+    stderr: true,
+  });
+  console.log("Container logs", logs?.toString());
+  await container?.remove();
+
+  clearTimeout(timeLimitExcededTimeout);
+  if (status.StatusCode === 0) {
+    console.log("Container exited successfully");
+  } else {
+    clearTimeout("Container exited with error");
+  }
+}
