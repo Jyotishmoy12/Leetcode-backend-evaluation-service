@@ -2,9 +2,41 @@ import { Job, Worker } from "bullmq";
 import { SUBMISSION_QUEUE } from "../utils/constants";
 import logger from "../config/logger.config";
 import { createNewRedisConnection } from "../config/redis.config";
-import { EvaluationJob } from "../interfaces/evaluation.interface";
+import {
+  EvaluationJob,
+  EvaluationResult,
+  StatusEnum,
+  TestCase,
+} from "../interfaces/evaluation.interface";
 import { runCode } from "../utils/containers/codeRunner.utils";
 import { LANGUAGE_CONFIG } from "../config/language.config";
+
+function matchTestCasesResults(
+  testCase: TestCase[],
+  results: EvaluationResult[]
+) {
+  const output: string[] = [];
+  if (results.length !== testCase.length) {
+    console.log("WA");
+    return;
+  }
+
+  testCase.map((testCase, index) => {
+    if (results[index].status === StatusEnum.TIME_LIMIT_EXCEEDED) {
+      output.push("TLE");
+    } else if (results[index].status === StatusEnum.RUNTIME_ERROR) {
+      output.push("RE");
+    } else {
+      // match the output
+      if (results[index].output === testCase.output) {
+        output.push("AC");
+      } else {
+        output.push("WA");
+      }
+    }
+  });
+  return output;
+}
 
 async function setupEvaluationWorker() {
   const worker = new Worker(
@@ -25,10 +57,17 @@ async function setupEvaluationWorker() {
             });
           }
         );
-        const testCasesRunnerResults = await Promise.all(
+        const testCasesRunnerResults: EvaluationResult[] = await Promise.all(
           testCasesRunnerPromise
         );
         console.log("testCasesRunnerResults", testCasesRunnerResults);
+
+        const output = matchTestCasesResults(
+          data.problem.testcases,
+          testCasesRunnerResults
+        );
+
+        console.log("output", output);
       } catch (error) {
         logger.info(`Evaluation job failed: ${job}`, error);
         return;

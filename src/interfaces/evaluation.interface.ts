@@ -19,3 +19,18 @@ export interface EvaluationJob {
   language: "python" | "cpp";
   problem: Problem;
 }
+
+
+export enum StatusEnum {
+  SUCCESS = "success",
+  FAILED = "failed",
+  TIME_LIMIT_EXCEEDED = "time_limit_exceeded",
+  RUNTIME_ERROR = "runtime_error",
+  COMPILATION_ERROR = "compilation_error",
+  INTERNAL_ERROR = "internal_error"
+}
+
+export interface EvaluationResult {
+  status: StatusEnum;
+  output: string | undefined;
+}

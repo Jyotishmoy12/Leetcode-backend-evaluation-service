@@ -1,3 +1,4 @@
+import { StatusEnum } from "../../interfaces/evaluation.interface";
 import { InternalServerError } from "../errors/app.error";
 import { commands } from "./commands.utils";
 import { createNewDockerContainer } from "./createContainer.utils";
@@ -37,7 +38,7 @@ export async function runCode(options: RunCodeOptions) {
   if (isTimeLimitExceeded) {
     container?.remove();
     return {
-      status: "error",
+      status: StatusEnum.TIME_LIMIT_EXCEEDED,
       output: "Time limit exceeded",
     };
   }
@@ -52,13 +53,13 @@ export async function runCode(options: RunCodeOptions) {
   clearTimeout(timeLimitExcededTimeout);
   if (status.StatusCode === 0) {
     return {
-      status: "success",
+      status: StatusEnum.SUCCESS,
       output: containerLogs,
     };
   } else {
     clearTimeout("Container exited with error");
     return {
-      status: "error",
+      status: StatusEnum.RUNTIME_ERROR,
       output: containerLogs,
     };
   }
