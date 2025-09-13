@@ -39,6 +39,28 @@ app.listen(serverConfig.PORT, async () => {
   //await testPythonCode()
 });
 
+// async function testCppCode() {
+//   const cppCode = `
+//   #include <iostream>
+//   using namespace std;
+//   int main(){
+//     int n;
+//     cin>>n;
+//     for(int i=1;i<=n;i++){
+//       cout<<i<<" ";
+//     }
+//     return 0;
+//   }
+//   `
+// }
+
+// await runCode({
+//   code: cppCode,
+//   language: "cpp",
+//   timeout: 1000,
+//   imageName: CPP_IMAGE,
+// });
+
 // async function testPythonCode() {
 //   const pythonCode = `print("bye")`;
 //   await runCode(

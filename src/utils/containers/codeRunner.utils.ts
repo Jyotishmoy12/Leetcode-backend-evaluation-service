@@ -19,7 +19,7 @@ export async function runCode(options: RunCodeOptions) {
   }
   const container = await createNewDockerContainer({
     imageName: imageName,
-    cmdExecutable: commands[language](code),
+    cmdExecutable: commands[language](code, "6"),
     memoryLimit: 1024 * 1024 * 1024,
   });
 
@@ -37,7 +37,11 @@ export async function runCode(options: RunCodeOptions) {
     stdout: true,
     stderr: true,
   });
-  console.log("Container logs", logs?.toString());
+
+  const containerLogs = processLogs(logs);
+
+  console.log("Container logs", containerLogs);
+
   await container?.remove();
 
   clearTimeout(timeLimitExcededTimeout);
@@ -46,4 +50,12 @@ export async function runCode(options: RunCodeOptions) {
   } else {
     clearTimeout("Container exited with error");
   }
+}
+
+function processLogs(logs: Buffer | undefined) {
+  return logs
+    ?.toString("utf8")
+    .replace(/\x00/g, "")
+    .replace(/[\x00-\x09\x08-\x1F\x7F-\x9F]/g, "")
+    .trim();
 }

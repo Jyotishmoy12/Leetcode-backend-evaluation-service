@@ -5,8 +5,8 @@ export const commands = {
     const runCommand = `echo '${code}' > code.py && python3 code.py`;
     return [...bashConfig, runCommand];
   },
-  cpp: function (code: string) {
-    const runCommand = `mkdir app && cd app && echo '${code}' > code.cpp && g++ code.cpp -o run && ./run`;
+  cpp: function (code: string, input:string) {
+    const runCommand = `mkdir app && cd app && echo '${code}' > code.cpp && echo '${input}' > input.txt && g++ code.cpp -o run && ./run < input.txt`;
     return [...bashConfig, runCommand];
   },
 };
