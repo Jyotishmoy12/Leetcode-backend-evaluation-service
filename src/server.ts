@@ -59,6 +59,7 @@ app.listen(serverConfig.PORT, async () => {
 //   language: "cpp",
 //   timeout: 1000,
 //   imageName: CPP_IMAGE,
+//   input: "5"
 // });
 
 // async function testPythonCode() {
@@ -68,7 +69,8 @@ app.listen(serverConfig.PORT, async () => {
 //     code: pythonCode,
 //     language: "python",
 //     timeout: 1000,
-//     imageName: PYTHON_IMAGE
+//     imageName: PYTHON_IMAGE,
+//     input: "5"
 //   }
 //
 //);

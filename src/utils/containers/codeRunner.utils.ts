@@ -9,17 +9,18 @@ export interface RunCodeOptions {
   language: "python" | "cpp";
   timeout: number;
   imageName: string;
+  input:string
 }
 export async function runCode(options: RunCodeOptions) {
   // Take the python code and dump in a file and run the python file in the container
-  const { code, language, timeout, imageName } = options;
+  const { code, language, timeout, imageName, input } = options;
 
   if (!allowedListedLanguages.includes(language)) {
     throw new InternalServerError("Language not allowed");
   }
   const container = await createNewDockerContainer({
     imageName: imageName,
-    cmdExecutable: commands[language](code, "6"),
+    cmdExecutable: commands[language](code, input),
     memoryLimit: 1024 * 1024 * 1024,
   });
 
