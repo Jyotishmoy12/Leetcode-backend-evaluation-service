@@ -9,7 +9,7 @@ export interface RunCodeOptions {
   language: "python" | "cpp";
   timeout: number;
   imageName: string;
-  input:string
+  input: string;
 }
 export async function runCode(options: RunCodeOptions) {
   // Take the python code and dump in a file and run the python file in the container
@@ -24,16 +24,23 @@ export async function runCode(options: RunCodeOptions) {
     memoryLimit: 1024 * 1024 * 1024,
   });
 
+  let isTimeLimitExceeded = false;
   const timeLimitExcededTimeout = setTimeout(() => {
     console.log("Time limit exceeded");
+    isTimeLimitExceeded = true;
     container?.kill();
   }, timeout);
 
-  console.log("Container created successfully", container?.id);
   await container?.start();
 
   const status = await container?.wait();
-  console.log("Container status", status);
+  if (isTimeLimitExceeded) {
+    container?.remove();
+    return {
+      status: "error",
+      output: "Time limit exceeded",
+    };
+  }
   const logs = await container?.logs({
     stdout: true,
     stderr: true,
@@ -41,15 +48,19 @@ export async function runCode(options: RunCodeOptions) {
 
   const containerLogs = processLogs(logs);
 
-  console.log("Container logs", containerLogs);
-
   await container?.remove();
-
   clearTimeout(timeLimitExcededTimeout);
   if (status.StatusCode === 0) {
-    console.log("Container exited successfully");
+    return {
+      status: "success",
+      output: containerLogs,
+    };
   } else {
     clearTimeout("Container exited with error");
+    return {
+      status: "error",
+      output: containerLogs,
+    };
   }
 }
 
